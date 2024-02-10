@@ -1,51 +1,50 @@
-import {
-  fetchContactsPending,
-  fetchContactsSucces,
-  fetchContactsError,
-  addContactPending,
-  addContactSucces,
-  addContactError,
-  deleteContactPending,
-  deleteContactSucces,
-  deleteContactError,
-} from './slice';
 import * as contactsApi from '../api/contacts-api';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 
-export const fetchContacts = () => {
-  const func = async dispatch => {
+export const fetchContacts = createAsyncThunk(
+  'contacts/fetchAll',
+  async (_, thunkApi) => {
     try {
-      dispatch(fetchContactsPending());
       const data = await contactsApi.requestFetchContacts();
-      dispatch(fetchContactsSucces(data));
+      return data;
     } catch (error) {
-      dispatch(fetchContactsError(error.message));
+      return thunkApi.rejectWithValue(error.message);
     }
-  };
-  return func;
-};
+  }
+);
 
-export const addContact = body => {
-  const func = async dispatch => {
+export const addContact = createAsyncThunk(
+  'contacts/addContact',
+  async (body, thunkApi) => {
     try {
-      dispatch(addContactPending());
       const data = await contactsApi.requestAddContacts(body);
-      dispatch(addContactSucces(data));
+      return data;
     } catch (error) {
-      dispatch(addContactError(error.message));
+      return thunkApi.rejectWithValue(error.message);
     }
-  };
-  return func;
-};
+  },
+  {
+    condition: (body, thunkApi) => {
+      const { contacts } = thunkApi.getState();
+      const checkName = contacts.items.find(
+        contact => contact.name.toLowerCase() === body.name.toLowerCase()
+      );
+      if (checkName) {
+        alert(`${body.name} is already in contacts.`);
+        return false;
+      }
+    },
+  }
+);
 
-export const deleteContact = id => {
-  const func = async dispatch => {
+export const deleteContact = createAsyncThunk(
+  'contacts/deleteContact',
+  async (id, thunkApi) => {
     try {
-      dispatch(deleteContactPending());
       await contactsApi.requestDeleteContacts(id);
-      dispatch(deleteContactSucces(id));
+      return id;
     } catch (error) {
-      dispatch(deleteContactError(error.message));
+      return thunkApi.rejectWithValue(error.message);
     }
-  };
-  return func;
-};
+  }
+);

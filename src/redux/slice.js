@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-// import { nanoid } from 'nanoid';
+import { fetchContacts, addContact, deleteContact } from './operations';
 
 const initialState = {
   contacts: {
@@ -8,75 +8,49 @@ const initialState = {
     error: null,
   },
   filter: '',
-  // items: [
-  //   { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-  //   { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-  //   { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-  //   { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-  // ],
-  // filter: '',
+};
+const pending = state => {
+  state.contacts.isLoading = true;
+  state.contacts.error = null;
+};
+const rejected = (state, { payload }) => {
+  state.contacts.isLoading = false;
+  state.contacts.error = payload;
 };
 
 const contactSlice = createSlice({
   name: 'contacts',
   initialState,
   reducers: {
-    fetchContactsPending: state => {
-      state.contacts.isLoading = true;
-      state.contacts.error = null;
-    },
-    fetchContactsSucces: (state, { payload }) => {
-      state.contacts.isLoading = false;
-      state.contacts.items = payload;
-    },
-    fetchContactsError: (state, { payload }) => {
-      state.contacts.isLoading = false;
-      state.contacts.error = payload;
-    },
-    addContactPending: (state, { payload }) => {
-      state.contacts.isLoading = true;
-      state.contacts.error = null;
-    },
-    addContactSucces: (state, { payload }) => {
-      state.contacts.isLoading = false;
-      state.contacts.items.unshift(payload);
-    },
-    addContactError: (state, { payload }) => {
-      state.contacts.isLoading = false;
-      state.contacts.error = payload;
-    },
-    deleteContactPending: state => {
-      state.contacts.isLoading = true;
-      state.contacts.error = null;
-    },
-    deleteContactSucces: (state, { payload }) => {
-      state.contacts.isLoading = false;
-      state.contacts.items = state.contacts.items.filter(
-        item => item.id !== payload
-      );
-    },
-    deleteContactError: (state, { payload }) => {
-      state.contacts.isLoading = false;
-      state.contacts.error = payload;
-    },
-
     setFilter(state, action) {
       state.filter = action.payload;
     },
+  },
+  extraReducers: buider => {
+    buider
+      .addCase(fetchContacts.pending, pending)
+      .addCase(fetchContacts.fulfilled, (state, { payload }) => {
+        state.contacts.isLoading = false;
+        state.contacts.items = payload;
+      })
+      .addCase(fetchContacts.rejected, rejected)
+      .addCase(addContact.pending, pending)
+      .addCase(addContact.fulfilled, (state, { payload }) => {
+        state.contacts.isLoading = false;
+        state.contacts.items.unshift(payload);
+      })
+      .addCase(addContact.rejected, rejected)
+      .addCase(deleteContact.pending, pending)
+      .addCase(deleteContact.fulfilled, (state, { payload }) => {
+        state.contacts.isLoading = false;
+        state.contacts.items = state.contacts.items.filter(
+          item => item.id !== payload
+        );
+      })
+      .addCase(deleteContact.rejected, rejected);
   },
 });
 
 export const contactReducer = contactSlice.reducer;
 
-export const {
-  setFilter,
-  fetchContactsPending,
-  fetchContactsSucces,
-  fetchContactsError,
-  addContactPending,
-  addContactSucces,
-  addContactError,
-  deleteContactPending,
-  deleteContactSucces,
-  deleteContactError,
-} = contactSlice.actions;
+export const { setFilter } = contactSlice.actions;

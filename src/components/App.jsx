@@ -7,16 +7,16 @@ import { ContactList } from './ContactsList/ContactsList';
 
 import { setFilter } from '../redux/slice';
 import {
-  getFilter,
-  getAllContacts,
-  getFilteredContacts,
+  selectFilter,
+  selectAllContacts,
+  selectFilteredContacts,
 } from '../redux/selectors';
 import { fetchContacts, addContact, deleteContact } from '../redux/operations';
 
 export const App = () => {
-  const filteredContacs = useSelector(getFilteredContacts);
-  const { items, isLoading, error } = useSelector(getAllContacts);
-  const filter = useSelector(getFilter);
+  const filteredContacs = useSelector(selectFilteredContacts);
+  const { isLoading, error } = useSelector(selectAllContacts);
+  const filter = useSelector(selectFilter);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -28,12 +28,6 @@ export const App = () => {
   };
 
   const onAddContact = (name, number) => {
-    const checkName = items.find(
-      contact => contact.name.toLowerCase() === name.toLowerCase()
-    );
-    if (checkName) {
-      return alert(`${name} is already in contacts.`);
-    }
     dispatch(addContact({ name, number }));
   };
 

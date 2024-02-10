@@ -1,8 +1,10 @@
-export const getAllContacts = store => store.contacts;
+export const selectAllContacts = store => store.contacts.items;
+export const selectIsLoading = store => store.contacts.isLoading;
+export const selectError = store => store.contacts.error;
 
-export const getFilter = store => store.filter;
+export const selectFilter = store => store.filter;
 
-export const getFilteredContacts = ({ contacts, filter }) => {
+export const selectFilteredContacts = ({ contacts, filter }) => {
   if (!filter) {
     return contacts.items;
   }

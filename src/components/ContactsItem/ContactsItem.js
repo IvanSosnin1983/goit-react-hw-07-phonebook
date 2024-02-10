@@ -6,7 +6,7 @@ export const ContactsItem = ({ contact, onDelete }) => {
   return (
     <li className={css.item}>
       <p className={css.text}>
-        {contact.name}: {contact.number}
+        {contact.name}: {contact.phone}
       </p>
       <button onClick={() => onDelete(contact.id)} className={css.button}>
         Delete
