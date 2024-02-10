@@ -8,14 +8,16 @@ import { ContactList } from './ContactsList/ContactsList';
 import { setFilter } from '../redux/slice';
 import {
   selectFilter,
-  selectAllContacts,
   selectFilteredContacts,
+  selectIsLoading,
+  selectError,
 } from '../redux/selectors';
 import { fetchContacts, addContact, deleteContact } from '../redux/operations';
 
 export const App = () => {
   const filteredContacs = useSelector(selectFilteredContacts);
-  const { isLoading, error } = useSelector(selectAllContacts);
+  const isLoading = useSelector(selectIsLoading);
+  const error = useSelector(selectError);
   const filter = useSelector(selectFilter);
   const dispatch = useDispatch();
 
